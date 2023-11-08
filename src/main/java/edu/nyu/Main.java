@@ -13,7 +13,7 @@ public class Main {
 
         //FILENAMES
         String filename = "SiouxFalls"; //this name is used for generating outputs
-        String network_filename = "SiouxFalls_network.csv";
+        String ttMatrix_filename = "SiouxFalls_TTmatrix.csv";
         String nodes_filename = "SiouxFalls_nodes.csv";
         String links_filename = "SiouxFalls_links.csv";
         String requests_filename = "";
@@ -100,7 +100,7 @@ public class Main {
 
                     try {
                         System.out.println("reading network");
-                        Reader.read_network(network, network_filename);
+                        Reader.read_network(network, ttMatrix_filename);
                         System.out.println("reading nodes");
                         Reader.read_nodes(nodes, nodes_filename);
                         System.out.println("reading stops");
