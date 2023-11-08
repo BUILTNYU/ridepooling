@@ -37,5 +37,5 @@ The output files include:
 - Vehicles' real-time location, which contains the location coordinates of every vehicle in the system at each time step.
 
 ## License
-The NYU non-commercial research license is applied to ridepooling (attached in the repository). Please contact Joseph Chow ([joseph.chow@nyu.edu](joseph.chow@nyu.edu)) for commercial use.
+The NYU non-commercial research license is applied to NOMAD-RPS (attached in the repository). Please contact Joseph Chow ([joseph.chow@nyu.edu](joseph.chow@nyu.edu)) for commercial use.
 For questions about the code, please contact Farnoosh Namdarpour ([farnoosh@nyu.edu](farnoosh@nyu.edu)).
