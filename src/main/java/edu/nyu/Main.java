@@ -26,7 +26,7 @@ public class Main {
         boolean write_occupancy_info = false;
         boolean write_requests_info = false;
         boolean enable_rebalancing = true;
-        boolean write_realtime_vehicle_locations = false;
+        boolean write_realtime_vehicle_locations = true;
 
         //PARAMETERS
         int simulation_period = 24 * 3600; //seconds
@@ -88,9 +88,9 @@ public class Main {
                 CSVWriter writer_vl = new CSVWriter(outputfile_vl);
                 String[] header_vl = new String[n_veh*2+1];
                 header_vl[0]="time(sec)";
-                for (int g=1; g<header_vl.length/2; g=g+2){
-                    header_vl[g]="V" + g + "_X";
-                    header_vl[g+1] = "V" + g + "_Y";
+                for (int g=1; g<header_vl.length; g=g+2){
+                    header_vl[g]="V" + (g-1)/2 + "_X";
+                    header_vl[g+1] = "V" + (g-1)/2 + "_Y";
                 }
                 writer_vl.writeNext(header_vl);
 
@@ -247,8 +247,8 @@ public class Main {
                             String[] line_vl = new String[n_veh*2+1];
                             line_vl[0] = Integer.toString(t);
                             for (int g=1; g<line_vl.length; g=g+2){
-                                line_vl[g] = Double.toString(nodes.get(vehicles.get(g).current_loc).x);
-                                line_vl[g+1] = Double.toString(nodes.get(vehicles.get(g).current_loc).y);
+                                line_vl[g] = Double.toString(nodes.get(vehicles.get((g-1)/2).current_loc).x);
+                                line_vl[g+1] = Double.toString(nodes.get(vehicles.get((g-1)/2).current_loc).y);
                             }
                             writer_vl.writeNext(line_vl);
                         }
