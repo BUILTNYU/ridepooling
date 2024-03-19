@@ -23,7 +23,7 @@ public class Main {
         //CONTROLS
         boolean use_hubs = true; //if true, the vehicles are initiated from hub locations otherwise they are assigned random initial locations
         boolean create_requests = false; //if true, it ignores requests_filename and generates random requests
-        boolean write_occupancy_info = false;
+        boolean write_occupancy_info = true;
         boolean write_requests_info = true;
         boolean enable_rebalancing = true;
         boolean write_realtime_vehicle_locations = true;
@@ -84,7 +84,12 @@ public class Main {
                 File file_occ = new File(dir, filename + "_occupancyInfo.csv");
                 FileWriter outputfile_occ = new FileWriter(file_occ);
                 CSVWriter writer_occ = new CSVWriter(outputfile_occ);
-                String[] header_occ = {"time", "idle", "occ_0", "occ_1", "occ_2", "occ_3", "occ_4", "occ_5", "occ_6"};
+                String[] header_occ = new String[v_cap+3];
+                header_occ[0] = "time";
+                header_occ[1] = "idle";
+                for (int i=0; i<=v_cap; i++){
+                    header_occ[i+2]="occ_" + i;
+                }
                 writer_occ.writeNext(header_occ);
 
                 //write realtime vehicle locations
@@ -157,28 +162,29 @@ public class Main {
                         System.out.println("t: " + t);
 
                         if (write_occupancy_info) {
-                            int occ[] = new int[]{0, 0, 0, 0, 0, 0, 0, 0};
+                            int occ[] = new int[v_cap+2];
+                            for (int i=0; i<v_cap+2; i++){
+                                occ[i]=0;
+                            }
                             for (Map.Entry<Integer, Vehicle> vehicle : vehicles.entrySet()) {
                                 if (vehicle.getValue().route_nodes.size() == 0 && vehicle.getValue().tt_to_next_node == 0) {
                                     occ[0] += 1;
-                                } else if (vehicle.getValue().current_load == 0) {
-                                    occ[1] += 1;
-                                } else if (vehicle.getValue().current_load == 1) {
-                                    occ[2] += 1;
-                                } else if (vehicle.getValue().current_load == 2) {
-                                    occ[3] += 1;
-                                } else if (vehicle.getValue().current_load == 3) {
-                                    occ[4] += 1;
-                                } else if (vehicle.getValue().current_load == 4) {
-                                    occ[5] += 1;
-                                } else if (vehicle.getValue().current_load == 5) {
-                                    occ[6] += 1;
-                                } else if (vehicle.getValue().current_load == 6) {
-                                    occ[7] += 1;
+                                } else {
+                                    for (int j=0; j<v_cap+1; j++){
+                                        if (vehicle.getValue().current_load == j) {
+                                            occ[j+1] += 1;
+                                            break;
+                                        }
+                                    }
                                 }
                             }
-                            String[] line_occ = {String.valueOf(x), String.valueOf(occ[0]), String.valueOf(occ[1]), String.valueOf(occ[2]),
-                                    String.valueOf(occ[3]), String.valueOf(occ[4]), String.valueOf(occ[5]), String.valueOf(occ[6]), String.valueOf(occ[7])};
+                            String[] line_occ = new String[v_cap+3];
+                            line_occ[0] = String.valueOf(x);
+                            for (int j=0; j<occ.length; j++){
+                                line_occ[j+1] = String.valueOf(occ[j]);
+                            }
+//                                    {String.valueOf(x), String.valueOf(occ[0]), String.valueOf(occ[1]), String.valueOf(occ[2]),
+//                                    String.valueOf(occ[3]), String.valueOf(occ[4]), String.valueOf(occ[5]), String.valueOf(occ[6]), String.valueOf(occ[7])};
 
                             writer_occ.writeNext(line_occ);
                         }
