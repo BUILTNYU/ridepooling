@@ -67,7 +67,10 @@ public class Main {
         ArrayList<Integer> hub_locations = new ArrayList<>();
 
         //write performance evaluation results
-        File file = new File(filename + "_results.csv");
+        File dir = new File("./outputs");
+        if(!dir.exists())
+            dir.mkdir();
+        File file = new File(dir,filename + "_results.csv");
         FileWriter outputfile = new FileWriter(file);
         CSVWriter writer = new CSVWriter(outputfile);
         String[] header = {"seed", "simulation_period", "n_requests", "n_veh", "n_stops", "theta",
@@ -78,14 +81,14 @@ public class Main {
         writer.writeNext(header);
 
                 //data for occupancy plot
-                File file_occ = new File(filename + "_occupancyInfo.csv");
+                File file_occ = new File(dir, filename + "_occupancyInfo.csv");
                 FileWriter outputfile_occ = new FileWriter(file_occ);
                 CSVWriter writer_occ = new CSVWriter(outputfile_occ);
                 String[] header_occ = {"time", "idle", "occ_0", "occ_1", "occ_2", "occ_3", "occ_4", "occ_5", "occ_6"};
                 writer_occ.writeNext(header_occ);
 
                 //write realtime vehicle locations
-                File file_vl = new File(filename + "_v_realtime_locations.csv");
+                File file_vl = new File(dir, filename + "_v_realtime_locations.csv");
                 FileWriter outputfile_vl = new FileWriter(file_vl);
                 CSVWriter writer_vl = new CSVWriter(outputfile_vl);
                 String[] header_vl = new String[n_veh*2+1];
@@ -273,7 +276,7 @@ public class Main {
 
                     //requests info output file
                     if (write_requests_info) {
-                        report_requests_info(filename + "_requests_info.csv", requests, nodes);
+                        report_requests_info(dir, filename + "_requests_info.csv", requests, nodes);
                     }
                 }
                 writer_occ.close();
@@ -1096,9 +1099,9 @@ public class Main {
         System.out.println("node ids: " + route_nodes);
     }
 
-    public static void report_requests_info(String filename, HashMap<Integer, Request> requests, HashMap<Integer, Node> nodes) throws IOException {
+    public static void report_requests_info(File dir, String filename, HashMap<Integer, Request> requests, HashMap<Integer, Node> nodes) throws IOException {
         //requests info output file
-        File file_r = new File(filename);
+        File file_r = new File(dir, filename);
         FileWriter outputfile_r = new FileWriter(file_r);
         CSVWriter writer_r = new CSVWriter(outputfile_r);
         String[] header_r = {"request_id", "submission_t", "pickup_t", "dropoff_t", "status", "pickup_x", "pickup_y", "dropoff_x", "dropoff_y"};
