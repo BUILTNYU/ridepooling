@@ -36,18 +36,21 @@ public class Reader {
         }
     }
 
-    public static void read_nodes (HashMap<Integer, Node> nodes, String filename) throws IOException {
+    public static void read_nodes (HashMap<Integer, Node> nodes, String filename, String sourceCrs, String destinationCrs) throws IOException {
         //csv data structure: network node id - X - Y - mapped node id
         BufferedReader br = new BufferedReader(new FileReader(filename));
         String line;
         br.readLine();
         while((line = br.readLine()) != null){
             String[] line_data = line.split(",");
-                nodes.put(Integer.parseInt(line_data[3]), new Node(Double.parseDouble(line_data[1]), Double.parseDouble(line_data[2]), Long.parseLong(line_data[0])));
+            ProjCoordinate node = convert_coordinates(Double.parseDouble(line_data[1]), Double.parseDouble(line_data[2]),
+                    sourceCrs, destinationCrs);
+            nodes.put(Integer.parseInt(line_data[3]), new Node(node.x, node.y, Long.parseLong(line_data[0])));
+//            nodes.put(Integer.parseInt(line_data[3]), new Node(Double.parseDouble(line_data[1]), Double.parseDouble(line_data[2]), Long.parseLong(line_data[0])));
         }
     }
 
-    public static void read_stops (ArrayList<Integer> stop_ids, HashMap<Integer, Node> nodes, HashMap<Integer, Node> stops, String filename) throws IOException {
+    public static void read_stops (ArrayList<Integer> stop_ids, HashMap<Integer, Node> nodes, HashMap<Integer, Node> stops, String filename, String sourceCrs, String destinationCrs) throws IOException {
         //csv data structure: stop id - X - Y - ...
         BufferedReader br = new BufferedReader(new FileReader(filename));
         String line;
@@ -61,7 +64,9 @@ public class Reader {
 
                 int former_stop_id = Integer.parseInt(line_data[0]);
 
-                nearest_node = find_nearest_node(nodes, Double.parseDouble(line_data[1]), Double.parseDouble(line_data[2]));
+                ProjCoordinate stop = convert_coordinates(Double.parseDouble(line_data[1]), Double.parseDouble(line_data[2]),
+                        sourceCrs, destinationCrs);
+                nearest_node = find_nearest_node(nodes, stop.x, stop.y);
 
                 for (Map.Entry<Integer, double[]> item: nearest_node.entrySet()) {
                     stops.put(item.getKey(), new Node(item.getValue()[0], item.getValue()[1], former_stop_id));

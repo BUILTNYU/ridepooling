@@ -16,15 +16,15 @@ public class Main {
         String ttMatrix_filename = "SiouxFalls_TTmatrix.csv";
         String nodes_filename = "SiouxFalls_nodes.csv";
         String links_filename = "SiouxFalls_links.csv";
-        String requests_filename = "";
+        String requests_filename = "SiouxFalls_requests.csv";
         String stops_filename = "SiouxFalls_stops.csv";
-        String hubs_filename = "";
+        String hubs_filename = "SiouxFalls_hubs.csv";
 
         //CONTROLS
-        boolean use_hubs = false;
-        boolean create_requests = true;
+        boolean use_hubs = true; //if true, the vehicles are initiated from hub locations otherwise they are assigned random initial locations
+        boolean create_requests = false; //if true, it ignores requests_filename and generates random requests
         boolean write_occupancy_info = false;
-        boolean write_requests_info = false;
+        boolean write_requests_info = true;
         boolean enable_rebalancing = true;
         boolean write_realtime_vehicle_locations = true;
 
@@ -32,11 +32,10 @@ public class Main {
         int simulation_period = 24 * 3600; //seconds
         int simulation_start_time = 0 * 3600;
         int t_step = 30; //time step in terms of seconds
-        int n_veh = 12; //number of vehicles
+        int n_veh = 20; //number of vehicles
         int v_cap = 6; //vehicle capacity
         int n_nodes = 24; //number of nodes in the network
         int n_requests = 3000;
-//        int n_veh = 8; //number of vehicles in the network
         int max_t_dist = 10 * 60; //maximum travel distance in terms of time unit (seconds) for finding candidate vehicles
         int max_wait_t = 10 * 60; //maximum waiting time for passengers to be picked up
         float max_tt_p = 0.4f; //a parameter for finding maximum travel time for each request, provided by MOIA
@@ -44,15 +43,18 @@ public class Main {
         int max_tt_added = 15 * 60; //a parameter for finding maximum travel time for each request, provided by MOIA - maximum travel time added to the direct travel time
         int base_dwell_time = 50; //base dwell time at each stop (seconds)
         int p_dwell_time = 10; //dwell time added to base dwell time for each passenger picked up or dropped off (seconds)
-        float wait_vot = 1.4f;
+        float wait_vot = 1.4f; //value of waiting time relative to in-vehicle travel time
         float theta = 0.5f; //a parameter of the cost function
         float beta = 0.005f; //a parameter of the cost function
         double big_M = Double.POSITIVE_INFINITY; //an arbitrary large value used in different functions
 //        long seed = 4; //random seed
         String requests_source_crs = "EPSG:4326"; //EPSG:4326 is equivalent to WGS84
-        String requests_destination_crs = "EPSG:25832"; //EPSG:25832 is projected coordinate system in meters for Europe
+        String requests_destination_crs = "EPSG:3455"; //EPSG:25832 is projected coordinate system in meters for Europe, EPSG:3455 is in ft for SiouxFalls
         String hubs_source_crs = "EPSG:4326"; //EPSG:4326 is equivalent to WGS84
-        String hubs_destination_crs = "EPSG:25832"; //EPSG:25832 is projected coordinate system in meters for Europe
+        String hubs_destination_crs = "EPSG:3455"; //EPSG:25832 is projected coordinate system in meters for Europe, EPSG:3455 is in ft for SiouxFalls
+        String nodes_source_crs = "EPSG:4326"; //EPSG:4326 is equivalent to WGS84
+        String nodes_destination_crs = "EPSG:3455"; //EPSG:25832 is projected coordinate system in meters for Europe, EPSG:3455 is in ft for SiouxFalls
+
 
         HashMap<Integer, Vehicle> vehicles = new HashMap<>();
         HashMap<Integer, Request> requests = new HashMap<>();
@@ -102,9 +104,9 @@ public class Main {
                         System.out.println("reading network");
                         Reader.read_network(network, ttMatrix_filename);
                         System.out.println("reading nodes");
-                        Reader.read_nodes(nodes, nodes_filename);
+                        Reader.read_nodes(nodes, nodes_filename, nodes_source_crs, nodes_destination_crs);
                         System.out.println("reading stops");
-                        Reader.read_stops(stop_ids, nodes, stops, stops_filename);
+                        Reader.read_stops(stop_ids, nodes, stops, stops_filename, nodes_source_crs, nodes_destination_crs);
                         System.out.println("reading requests");
                         if (create_requests) {
                             create_requests(n_requests, requests, stop_ids, simulation_period, network, max_wait_t, max_tt_p, max_tt_min, max_tt_added, seed);
@@ -271,7 +273,7 @@ public class Main {
 
                     //requests info output file
                     if (write_requests_info) {
-                        report_requests_info(filename + "requests_info.csv", requests, nodes);
+                        report_requests_info(filename + "_requests_info.csv", requests, nodes);
                     }
                 }
                 writer_occ.close();
@@ -1103,7 +1105,7 @@ public class Main {
 
         writer_r.writeNext(header_r);
         for (Map.Entry<Integer, Request> r : requests.entrySet()) {
-            print_request_info(requests, r.getKey());
+//            print_request_info(requests, r.getKey());
             String[] line = {String.valueOf(r.getKey()), String.valueOf(r.getValue().submission_t),
                     String.valueOf(r.getValue().pickup_t), String.valueOf(r.getValue().dropoff_t),
                     String.valueOf(r.getValue().status), String.valueOf(nodes.get(r.getValue().origin).x),
