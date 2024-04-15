@@ -81,29 +81,6 @@ public class Reader {
         }
     }
 
-    public static void read_transfers (ArrayList<Integer> transfer_ids, HashMap<Integer, Node> stops, String filename) throws IOException {
-        //csv data structure: stop id
-        BufferedReader br = new BufferedReader(new FileReader(filename));
-        String line;
-        while((line = br.readLine()) != null) {
-
-            String[] line_data = line.split(",");
-
-            if (line_data[0].contains("r") == false) {
-
-                int former_stop_id = Integer.parseInt(line_data[0]);
-                for (Map.Entry<Integer, Node> stop : stops.entrySet()){
-                    if (stop.getValue().former_id == former_stop_id){
-                        if (!transfer_ids.contains(Integer.valueOf(stop.getKey()))) {
-                            transfer_ids.add(stop.getKey());
-                        }
-                        continue;
-                    }
-                }
-            }
-        }
-    }
-
     public static void read_requests (HashMap<Integer, Request> requests, HashMap<Integer, Node> stops, Network network,
                                       String filename, int max_wait_t, float max_tt_p, int max_tt_min, int max_tt_add,
                                       String sourceCrs, String destinationCrs) throws IOException {
